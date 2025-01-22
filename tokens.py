@@ -13,7 +13,7 @@ class Token :
 	def __str__(self) -> str:
 		return f"<Token value: '{self.value}', type: '{self.type}', span: {self.span}>"
 
-def parseRule(rule: dict[str, str] | list[str] | str) :
+def parseRule(rule: dict | list[str] | str) :
 	if type(rule) is str :
 		return {
 			"rules": [rule],
@@ -26,9 +26,15 @@ def parseRule(rule: dict[str, str] | list[str] | str) :
 			"child": {}
 		}
 
+	if type(rule) is dict :
+		return {
+			"rules": [rule["rule"]] if "rule" in rule else rule["rules"],
+			"child": {x: rule["child"][x] for x in rule["child"]} if "child" in rule else {}
+		}
+
 	return {
-		"rules": [rule["rule"]] if "rule" in rule else rule["rules"],
-		"child": {x: rule["child"][x] for x in rule["child"]} if "child" in rule else {}
+		"rules": [],
+		"child": {}
 	}
 
 def getMatching(pattern: str, string: str, type: str) -> list[Token] :
