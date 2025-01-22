@@ -1,12 +1,17 @@
 
 from pathlib import Path
 from termcolor import cprint
+from argParser import parseArgs
 
 import toml
-import sys
 
-if len(sys.argv) > 1 :
-	with open(sys.argv[1]) as f :
+flags, args = parseArgs({
+	"t": "save-tokens",
+	"h": "help"
+})
+
+if len(args) > 0 and not "help" in flags :
+	with open(args[0]) as f :
 		raw_file = f.read()
 else :
 	print(
@@ -15,6 +20,7 @@ else :
 		"",
 		"Options:",
 		" -t, --save-tokens  Saves parsed tokens to tokens.json",
+		" -h, --help         Shows this message",
 		sep = "\n"
 	)
 	exit(1)
@@ -34,4 +40,6 @@ cprint("Successfully loaded config file!", "green")
 
 from tokenParser import parseTokens
 
-tokens = parseTokens(config.main_dialect, raw_file)
+tokens = parseTokens(config.main_dialect, raw_file, "save-tokens" in flags)
+
+print(*[f"[{x.value}]({x.type})" for x in tokens])
