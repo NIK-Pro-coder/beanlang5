@@ -3,6 +3,21 @@ from pathlib import Path
 from termcolor import cprint
 
 import toml
+import sys
+
+if len(sys.argv) > 1 :
+	with open(sys.argv[1]) as f :
+		raw_file = f.read()
+else :
+	print(
+		"Syntax:",
+		" beanlang [file]",
+		"",
+		"Options:",
+		" -t, --save-tokens  Saves parsed tokens to tokens.json",
+		sep = "\n"
+	)
+	exit(1)
 
 class Config :
 	def __init__(self, obj: dict) -> None:
@@ -17,4 +32,6 @@ with open(Path.home() / ".config/beanlang/config.toml") as f :
 	config = Config(toml.load(f))
 cprint("Successfully loaded config file!", "green")
 
-print(config.main_dialect)
+from tokenParser import parseTokens
+
+tokens = parseTokens(config.main_dialect, raw_file)
